@@ -1,24 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import {BrowserRouter as Router, Routes,Route} from 'react-router-dom';
+import { Login } from './pages/Login';
+import {PersistLogin} from './components/PersistLogin';
+import {RequireAuth} from './components/RequireAuth';
+import { Home } from './pages/Home';
+import CustomThemeProvider from './theme/CustomThemeProvider';
 
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <CustomThemeProvider>
+        <Router>
+          <Routes>
+            <Route path='/login' element={<Login/>}/>
+            <Route element={<PersistLogin/>}>
+              <Route element={<RequireAuth/>}>
+                <Route path='*' element={<Home/>}/>
+              </Route>
+            </Route>
+          </Routes>
+        </Router>
+    </CustomThemeProvider>
   );
 }
 

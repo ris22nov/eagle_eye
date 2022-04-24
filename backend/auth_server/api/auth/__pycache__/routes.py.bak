@@ -1,0 +1,39 @@
+from flask import Blueprint,request,jsonify
+from flask_jwt_extended import create_access_token,create_refresh_token,unset_jwt_cookies
+from models import User,db
+
+
+bp = Blueprint('auth', __name__)
+
+@bp.route('/register', methods = ['POST'])
+def new_user():
+    username = request.json.get('username')
+    password = request.json.get('password')
+    if username is None or password is None:
+        return jsonify({'Message': "Please Provide a valid User Name & Password"}), 400 # user or Password Not Provided
+    if User.query.filter_by(username = username).first() is not None:
+        return jsonify({'Message': "User Already Exist"}), 400 # existing user
+    user = User(username = username)
+    user.hash_password(password)
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({ 'username': user.username }), 201 
+
+@bp.route('/login', methods=["POST"])
+def create_token():
+    username = request.json.get("username", None)
+    password = request.json.get("password", None)
+    user = User.query.filter_by(username = username).first()
+    if not user or not user.verify_password(password):
+        response =  {"access_token":"Unauthorised Access"}
+    else:
+        access_token = create_access_token(identity=username)
+        refresh_token = create_refresh_token(identity=username)
+        response = {"access_token":access_token,"refresh_token":refresh_token}
+    return response
+
+@bp.route("/logout", methods=["POST"])
+def logout():
+    response = jsonify({"msg": "logout successful"})
+    unset_jwt_cookies(response)
+    return response
