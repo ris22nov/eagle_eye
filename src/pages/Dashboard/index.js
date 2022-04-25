@@ -1,7 +1,7 @@
-import InfoCards from '../../../components/InfoCards';
+import InfoCards from '../../components/InfoCards';
 import { Grid } from '@mui/material';
 
-export const InwardDashboard = () => {
+export const Dashboard = () => {
   return (
     <Grid container spacing={3}>
         <Grid item desktop={2} laptop={4} tablet={6} mobile={12}>
